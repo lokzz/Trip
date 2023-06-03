@@ -5,3 +5,5 @@ bad code will be active here
 
 most stolen from CodeWhisperer
 ### lol
+
+# Made with NiceGUI
