@@ -2,10 +2,14 @@ from nicegui import ui, app
 import time
 import json
 
-##read json from data.json into knowndict
+##init
 with open('data.json') as json_file:
     knowndict = json.load(json_file)
+print("{} | data load           done".format(time.strftime("%H:%M:%S")))
 
+
+##init end
+##functions
 def write_log(data):
     with open('log.txt', 'a') as f:
         f.write(data+"\n")
@@ -24,11 +28,16 @@ with ui.tabs() as tabs:
     ui.tab('Trips', icon='flight_takeoff')
     ui.tab('About', icon='info')
 
-with ui.tab_panels(tabs, value='Home'):
-    with ui.tab_panel('Home'):
-        ui.label("Select Trip:")
-        select1 = ui.select(knowndict, value=1, on_change=lambda selected: write_log(str(selected.value)))
-        select1val = str(select1.value)
+with ui.tab_panels(tabs, value='Trips'):
+    with ui.tab_panel('Trips'):
+        ##put in row
+        with ui.row():
+            ##align label to middle
+            triplabel1 = ui.label("Select Trip:")
+            select1 = ui.select(knowndict, value=1, on_change=lambda selected: write_log(str(selected.value)))
+            select1val = str(select1.value)
+            ##load button (link)
+            loadbutton1 = ui.button("Go", on_click=lambda: ui.open("trips/"+select1val))
     with ui.tab_panel('About'):
         ui.label('Made with pain, by Jack.')
         ui.label('Project started on 4 Jun, 2023.')
