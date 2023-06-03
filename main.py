@@ -28,6 +28,7 @@ with ui.tab_panels(tabs, value='Home'):
     with ui.tab_panel('Home'):
         ui.label("Select Trip:")
         select1 = ui.select(knowndict, value=1, on_change=lambda selected: write_log(str(selected.value)))
+        select1val = str(select1.value)
     with ui.tab_panel('About'):
         ui.label('Made with pain, by Jack.')
         ui.label('Project started on 4 Jun, 2023.')
