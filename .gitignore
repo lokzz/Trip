@@ -1,4 +1,5 @@
 /.vscode
-trips.json
+/trips
 log.txt
-setupjson.py
+trips.json
+featuretest.py
