@@ -1,11 +1,11 @@
-from nicegui import ui, app
+from nicegui import ui
 from starlette.requests import Request
 import time
 import json
 import os
 
 ##formatting
-print('|-------------------------------------------|')
+print('|-------------------------------------------------|')
 
 
 if 'trips.json' in os.listdir():
@@ -14,14 +14,14 @@ if 'trips.json' in os.listdir():
 else:
     open('trips.json', 'w').close()
     knowndict = ["None"]
-print("| {} | data load               [done] |".format(time.strftime("%H:%M:%S")))
+print("| {} | data load               [done] |".format(time.strftime("%d/%m %H:%M:%S")))
 
 
 def write_log(data):
     addspecs = 30 - len(data)
     for i in range(addspecs):
         data += " "
-    out = ("| {} | {} |".format(time.strftime("%H:%M:%S"), data))
+    out = ("| {} | {} |".format(time.strftime("%d/%m %H:%M:%S"), data))
     with open('log.txt', 'a') as f:
         f.write(out+"\n")
     write_console(data)
@@ -30,7 +30,7 @@ def write_console(text):
     addspecs = 30 - len(text)
     for i in range(addspecs):
         text += " "
-    print("| {} | {} |".format(time.strftime("%H:%M:%S"), text))
+    print("| {} | {} |".format(time.strftime("%d/%m %H:%M:%S"), text))
 
 def reload_trips():
     with open('trips.json') as json_file:
@@ -63,8 +63,8 @@ def open_trip(trip):
         ui.notify("select a trip")
 
 
-print("| {} | function load           [done] |".format(time.strftime("%H:%M:%S")))
-print('|-------------------------------------------|')
+print("| {} | function load           [done] |".format(time.strftime("%d/%m %H:%M:%S")))
+print('|-------------------------------------------------|')
 
 #MainPage
 def update():
@@ -122,7 +122,7 @@ def trips(request: Request):
     tripheader.set_content("Chosen trip: {}".format(requestedtrip))
     requestedtrip_json = requestedtrip+".json"
     if requestedtrip_json in os.listdir("trips"):
-        write_console(requestedtrip + " called")
+        write_log(requestedtrip + " called")
     
     ui.timer(interval=1, callback=lambda: update())
 #TripsPageEnd
