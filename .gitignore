@@ -1,6 +1,5 @@
 /.vscode
 /trips
-.gitignore
 log.txt
 trips.json
 featuretest.py
