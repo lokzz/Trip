@@ -1,4 +1,5 @@
 from nicegui import ui, app
+from starlette.requests import Request
 import time
 import json
 import os
@@ -37,39 +38,41 @@ def make_trip(name):
                 json.dump(knowndict, json_file)
 
 def open_trip(trip):
+    trip = str(trip)
+    write_log(trip)
+    trip = trip.replace("'", "")
+    write_log(trip)
     if not trip == "Choose":
         if trip == "None":
             ui.notify("what are you trying to do")
         else:
             if trip in knowndict:
-                ui.open("trips/"+trip)
+                ui.open("trips?name=_"+str(select1.value))
             else:
                 ui.notify("trip nonexist")
     else:
         ui.notify("select a trip")
 
+
+print("| {} | function load      [done] |".format(time.strftime("%H:%M:%S")))
+print('|--------------------------------------|')
+
+#MainPage
 def update():
     timelabel1.set_text("It's currently " + time.strftime("%H:%M:%S") + " In HKT.")
     reload_trips()
     select1.update()
-print("| {} | function load      [done] |".format(time.strftime("%H:%M:%S")))
-
-print('|--------------------------------------|')
-
 
 with ui.header().style('background-color: #3874c8').classes('items-center justify-between'):
     ui.markdown('## This is **Trip**.')
-
 with ui.footer().style('background-color: #3874c8'):
     current_time = time.strftime("%H:%M:%S")
     timelabel1 = ui.label("It's currently " + current_time)
-
 
 with ui.tabs() as tabs:
     ui.tab('Trips', icon='flight_takeoff')
     ui.tab('Create', icon='add_box')
     ui.tab('About', icon='info')
-
 with ui.tab_panels(tabs, value='Trips'):
     with ui.tab_panel('Trips'):
         with ui.row():
@@ -86,6 +89,33 @@ with ui.tab_panels(tabs, value='Trips'):
         ui.label('Made in Python, with NiceGUI.')
         ui.label('Project started on 4 Jun, 2023.')
         ui.link('source code here', 'https://github.com/lokzz/Trip')
+#MainPageEnd
+
+#TripsPage
+@ui.page('/trips')
+def trips(request: Request):
+    def update():
+        timelabel1.set_text("It's currently " + time.strftime("%H:%M:%S") + " In HKT.")
+        reload_trips()
+        select1.update()
+    
+    with ui.header().style('background-color: #3874c8'):
+        with ui.column():
+            ui.markdown('## This is **Trip**.')
+            tripheader = ui.markdown()
+    with ui.footer().style('background-color: #3874c8'):
+        current_time = time.strftime("%H:%M:%S")
+        timelabel1 = ui.label("It's currently " + current_time)
+    
+    ##if empty query, redirect back to main page
+    if request._query_params == {}:
+        ui.open('/')
+    requestedtrip = str(request._query_params)
+    requestedtrip = requestedtrip.replace("name=_", "")
+    tripheader.set_content("Chosen trip: **{}**".format(requestedtrip))
+    
+    ui.timer(interval=0.1, callback=lambda: update())
+#TripsPageEnd
 
 
 ui.timer(interval=0.1, callback=lambda: update())
