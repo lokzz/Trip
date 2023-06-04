@@ -1,8 +1,9 @@
-from nicegui import ui
+from nicegui import ui, app, nicegui
 from starlette.requests import Request
 import time
 import json
 import os
+import re
 
 ##formatting
 print('|----------------|--------------------------------|')
@@ -22,20 +23,28 @@ with open('log.txt', 'a') as f:
     f.write('|                |                                |\n')
     f.close()
 
-def write_log(data):
-    addspecs = 30 - len(data)
-    for i in range(addspecs):
-        data += " "
-    out = ("| {} | {} |".format(time.strftime("%d/%m %H:%M:%S"), data))
-    with open('log.txt', 'a') as f:
-        f.write(out+"\n")
-    write_console(data)
+def write_log(data, console=True, format=True):
+    if format:
+        addspecs = 30 - len(data)
+        for i in range(addspecs):
+            data += " "
+        data = ("| {} | {} |".format(time.strftime("%d/%m %H:%M:%S"), data))
+        with open('log.txt', 'a') as f:
+            f.write(data+"\n")
+    else:
+        with open('log.txt', 'a') as f:
+            f.write(data+"\n")
+    if console:
+        write_console(data, False)
 
-def write_console(text):
-    addspecs = 30 - len(text)
-    for i in range(addspecs):
-        text += " "
-    print("| {} | {} |".format(time.strftime("%d/%m %H:%M:%S"), text))
+def write_console(text, format=True):
+    if format:
+        addspecs = 30 - len(text)
+        for i in range(addspecs):
+            text += " "
+        print("| {} | {} |".format(time.strftime("%d/%m %H:%M:%S"), text))
+    else:
+        print(text)
 
 def reload_trips():
     with open('trips.json') as json_file:
@@ -137,6 +146,28 @@ def trips(request: Request):
     ui.timer(interval=1, callback=lambda: update())
 #TripsPageEnd
 
+def on_connect(ip):
+    if not ip.has_socket_connection:
+        theip = str(ip.ip)
+        addspecs = 15 - len(theip)
+        add = ""
+        for i in range(addspecs):
+            add += " "
+        adddiv2 = 1
+        adddiv2 = addspecs // 2
+        adddiv3 = ""
+        for i in range(adddiv2):
+            adddiv3 += "."
+        addlist = re.findall(adddiv3, add)
+        addlist1 = addlist[0]
+        addlist2 = addlist[1]
+        addlist1_1 = addlist1[:-1] + '@'
+        if not (addspecs % 2) == 0:
+            addlist2 += " "
+        add = addlist1_1 + addlist2
+        theip = add + theip
+        write_log('new connection ' + theip, True)
 
+app.on_connect(on_connect)
 ui.timer(interval=0.1, callback=lambda: update())
 ui.run(port=80,title="Jack's site",dark=True,language='en-US')
