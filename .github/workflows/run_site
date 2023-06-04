@@ -1,0 +1,12 @@
+name: start_site
+on:
+  workflow_dispatch: true
+jobs:
+  run_site:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: setup & run
+        run: |
+          pip3 install nicegui starlette
+          python3 main.py
