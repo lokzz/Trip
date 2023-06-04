@@ -1,6 +1,12 @@
 name: start_site
 on:
-  workflow_dispatch: true
+  push:
+    branches:
+    - main
+  pull_request:
+    branches:
+    - main
+  workflow_dispatch: 
 jobs:
   run_site:
     runs-on: ubuntu-latest
