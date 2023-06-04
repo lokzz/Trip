@@ -103,9 +103,6 @@ with ui.tab_panels(tabs, value='Trips'):
 #TripsPage
 @ui.page('/trips')
 def trips(request: Request):
-    import time
-    import os
-    
     def update():
         timelabel1.set_text("It's currently " + time.strftime("%H:%M:%S") + " In HKT.")
     
