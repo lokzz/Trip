@@ -54,6 +54,8 @@ def update():
     select1.update()
 print("| {} | function load      [done] |".format(time.strftime("%H:%M:%S")))
 
+print('|--------------------------------------|')
+
 
 with ui.header().style('background-color: #3874c8').classes('items-center justify-between'):
     ui.markdown('## This is **Trip**.')
@@ -85,9 +87,6 @@ with ui.tab_panels(tabs, value='Trips'):
         ui.label('Project started on 4 Jun, 2023.')
         ui.link('source code here', 'https://github.com/lokzz/Trip')
 
-print("| {} | site content load  [done] |".format(time.strftime("%H:%M:%S")))
 
 ui.timer(interval=0.1, callback=lambda: update())
 ui.run(port=80,title="Jack's site",dark=True,language='en-US')
-print("| {} | start site         [done] |".format(time.strftime("%H:%M:%S")))
-print('|--------------------------------------|')
