@@ -96,8 +96,6 @@ with ui.tab_panels(tabs, value='Trips'):
 def trips(request: Request):
     def update():
         timelabel1.set_text("It's currently " + time.strftime("%H:%M:%S") + " In HKT.")
-        reload_trips()
-        select1.update()
     
     with ui.header().style('background-color: #3874c8'):
         with ui.column():
@@ -107,14 +105,13 @@ def trips(request: Request):
         current_time = time.strftime("%H:%M:%S")
         timelabel1 = ui.label("It's currently " + current_time)
     
-    ##if empty query, redirect back to main page
-    if request._query_params == {}:
-        ui.open('/')
     requestedtrip = str(request._query_params)
     requestedtrip = requestedtrip.replace("name=_", "")
-    tripheader.set_content("Chosen trip: **{}**".format(requestedtrip))
+    ##check length of requestedtrip
+    tripheader.set_content("Chosen trip: {}".format(requestedtrip))
     
-    ui.timer(interval=0.1, callback=lambda: update())
+
+    ui.timer(interval=1, callback=lambda: update())
 #TripsPageEnd
 
 
