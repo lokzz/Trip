@@ -14,8 +14,13 @@ if 'trips.json' in os.listdir():
 else:
     open('trips.json', 'w').close()
     knowndict = ["None"]
-print("| {} > data load               [done] |".format(time.strftime("%d/%m %H:%M:%S")))
+print("| {} | data load               [done] |".format(time.strftime("%d/%m %H:%M:%S")))
 
+with open('log.txt', 'a') as f:
+    f.write('|----------------|--------------------------------|\n')
+    f.write('| {} | server restarted               |\n'.format(time.strftime("%d/%m %H:%M:%S")))
+    f.write('|                |                                |\n')
+    f.close()
 
 def write_log(data):
     addspecs = 30 - len(data)
@@ -30,7 +35,7 @@ def write_console(text):
     addspecs = 30 - len(text)
     for i in range(addspecs):
         text += " "
-    print("| {} > {} |".format(time.strftime("%d/%m %H:%M:%S"), text))
+    print("| {} | {} |".format(time.strftime("%d/%m %H:%M:%S"), text))
 
 def reload_trips():
     with open('trips.json') as json_file:
@@ -49,6 +54,7 @@ def make_trip(name):
                 knowndict.append(name)
                 json.dump(knowndict, json_file)
             open("trips/"+name+".json", "w+")
+        write_log('trip [{}] created'.format(name))
         ui.notify('added {}'.format(name))
         tabs.set_value('Trips')
 
@@ -67,7 +73,7 @@ def open_trip(trip):
         ui.notify("select a trip")
 
 
-print("| {} > function load           [done] |".format(time.strftime("%d/%m %H:%M:%S")))
+print("| {} | function load           [done] |".format(time.strftime("%d/%m %H:%M:%S")))
 print('|----------------|--------------------------------|')
 
 #MainPage
@@ -90,7 +96,7 @@ with ui.tab_panels(tabs, value='Trips'):
     with ui.tab_panel('Trips'):
         with ui.row():
             triplabel1 = ui.label("Select Trip:")
-            select1 = ui.select(knowndict, value="Choose", on_change=lambda selected: write_log(str(selected.value) + " chosen"))
+            select1 = ui.select(knowndict, value="Choose", on_change=lambda selected: write_log("[" + str(selected.value) + "]" + " chosen"))
             loadbutton1 = ui.button("Go", on_click=lambda: open_trip(select1.value))
     with ui.tab_panel('Create'):
         with ui.row():
@@ -123,7 +129,7 @@ def trips(request: Request):
     tripheader.set_content("Chosen trip: **{}**".format(requestedtrip))
     requestedtrip_json = requestedtrip+".json"
     if requestedtrip_json in os.listdir("trips"):
-        write_log(requestedtrip + " called")
+        write_log("[" + requestedtrip + "]" +" called")
     else:
         ui.label("Trip not found.")
         ui.button("GO BACK", on_click=lambda: ui.open("/"))
