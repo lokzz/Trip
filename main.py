@@ -5,7 +5,7 @@ import json
 import os
 
 ##formatting
-print('|-------------------------------------------------|')
+print('|----------------|--------------------------------|')
 
 
 if 'trips.json' in os.listdir():
@@ -14,7 +14,7 @@ if 'trips.json' in os.listdir():
 else:
     open('trips.json', 'w').close()
     knowndict = ["None"]
-print("| {} | data load               [done] |".format(time.strftime("%d/%m %H:%M:%S")))
+print("| {} > data load               [done] |".format(time.strftime("%d/%m %H:%M:%S")))
 
 
 def write_log(data):
@@ -30,7 +30,7 @@ def write_console(text):
     addspecs = 30 - len(text)
     for i in range(addspecs):
         text += " "
-    print("| {} | {} |".format(time.strftime("%d/%m %H:%M:%S"), text))
+    print("| {} > {} |".format(time.strftime("%d/%m %H:%M:%S"), text))
 
 def reload_trips():
     with open('trips.json') as json_file:
@@ -39,7 +39,8 @@ def reload_trips():
 def make_trip(name):
     if name == "":
         ui.notify("what are you trying to do")
-    ##write to trips.json (add current trips aswell (we will be overriding old file (this is really bad)))
+    elif name in knowndict:
+        ui.notify("trip exists")
     else:
         with open('trips.json', 'w') as json_file:
             if knowndict == ["None"]:
@@ -47,6 +48,9 @@ def make_trip(name):
             else:
                 knowndict.append(name)
                 json.dump(knowndict, json_file)
+            open("trips/"+name+".json", "w+")
+        ui.notify('added {}'.format(name))
+        tabs.set_value('Trips')
 
 def open_trip(trip):
     trip = str(trip)
@@ -63,8 +67,8 @@ def open_trip(trip):
         ui.notify("select a trip")
 
 
-print("| {} | function load           [done] |".format(time.strftime("%d/%m %H:%M:%S")))
-print('|-------------------------------------------------|')
+print("| {} > function load           [done] |".format(time.strftime("%d/%m %H:%M:%S")))
+print('|----------------|--------------------------------|')
 
 #MainPage
 def update():
@@ -91,7 +95,7 @@ with ui.tab_panels(tabs, value='Trips'):
     with ui.tab_panel('Create'):
         with ui.row():
             Creatlabel1 = ui.label("Create Trip:")
-            newtripbox = ui.input(value="", label="name:", )
+            newtripbox = ui.input(value="", label="name:").on('keydown.enter', lambda: make_trip(newtripbox.value))
             loadbutton2 = ui.button("Make", on_click=lambda: make_trip(newtripbox.value))
     with ui.tab_panel('About'):
         ui.label('Made with pain, by Jack.')
@@ -116,10 +120,13 @@ def trips(request: Request):
     
     requestedtrip = str(request._query_params)
     requestedtrip = requestedtrip.replace("name=_", "")
-    tripheader.set_content("Chosen trip: {}".format(requestedtrip))
+    tripheader.set_content("Chosen trip: **{}**".format(requestedtrip))
     requestedtrip_json = requestedtrip+".json"
     if requestedtrip_json in os.listdir("trips"):
         write_log(requestedtrip + " called")
+    else:
+        ui.label("Trip not found.")
+        ui.button("GO BACK", on_click=lambda: ui.open("/"))
     
     ui.timer(interval=1, callback=lambda: update())
 #TripsPageEnd
