@@ -1,4 +1,4 @@
-from nicegui import ui, app, nicegui
+from nicegui import ui, app
 from starlette.requests import Request
 import time
 import json
@@ -169,4 +169,4 @@ def on_connect(ip):
 
 app.on_connect(on_connect)
 ui.timer(interval=0.1, callback=lambda: update())
-ui.run(port=80,title="Jack's site",dark=True,language='en-US')
+ui.run(port=80,title="Jack's site",dark=True)
