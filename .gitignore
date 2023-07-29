@@ -1,5 +1,5 @@
 /.vscode
 /trips
 log.txt
-trips.json
+spots.json
 featuretest.py

@@ -1,4 +1,4 @@
-from lokzzpylib import *
+import lokzzpylib
 from nicegui import ui, app
 from starlette.requests import Request
 import time
@@ -16,6 +16,7 @@ if 'spots.json' in os.listdir():
 else:
     open('spots.json', 'w').close()
     knowndict = ["None"]
+
 print("| {} | data load               [done] |".format(time.strftime("%d/%m %H:%M:%S")))
 
 with open('log.txt', 'a') as f:
@@ -54,19 +55,19 @@ def reload_spots():
 def make_spot(name):
     if name == "":
         ui.notify("what are you trying to do")
-    elif name in knowndict:
-        ui.notify("spot exists")
     else:
         with open('spots.json', 'w') as json_file:
-            if knowndict == ["None"]:
-                json.dump(name, json_file)
-            else:
-                knowndict.append(name)
-                json.dump(knowndict, json_file)
-            open("spots/"+name+".json", "w+")
-        write_log('spot [{}] created'.format(name))
-        ui.notify('added {}'.format(name))
-        tabs.set_value('spots')
+            try:
+                open("trips/"+name+".json", "x")
+                if knowndict == ["None"]:
+                    json.dump(name, json_file)
+                else:
+                    knowndict.append(name)
+                    json.dump(knowndict, json_file)
+                ui.open("spots?name=_"+str(select1.value))
+            except:
+                ui.notify(f"spot \"{name}\" already exists.")
+                tabs.set_value('spots')
 
 def open_spot(spot):
     spot = str(spot)
@@ -106,7 +107,7 @@ with ui.tab_panels(tabs, value='spots'):
     with ui.tab_panel('spots'):
         with ui.row():
             spotlabel1 = ui.label("Select spot:")
-            select1 = ui.select(knowndict, value="Choose", on_change=lambda selected: write_log("[" + str(selected.value) + "]" + " chosen"))
+            select1 = ui.select(knowndict, value="None", on_change=lambda selected: write_log("[" + str(selected.value) + "]" + " chosen"))
             loadbutton1 = ui.button("Go", on_click=lambda: open_spot(select1.value))
     with ui.tab_panel('Create'):
         with ui.row():
@@ -117,7 +118,7 @@ with ui.tab_panels(tabs, value='spots'):
         ui.label('Made with pain, by Jack.')
         ui.label('Made in Python, with NiceGUI.')
         ui.label('Project started on 4 Jun, 2023.')
-        ui.link('source code here', 'https://github.com/lokzz/spot')
+        ui.link('source code here', 'https://github.com/lokzz/trip')
 #MainPageEnd
 
 #spotsPage
@@ -138,7 +139,7 @@ def spots(request: Request):
     requestedspot = requestedspot.replace("name=_", "")
     spotheader.set_content("Chosen spot: **{}**".format(requestedspot))
     requestedspot_json = requestedspot+".json"
-    if requestedspot_json in os.listdir("spots"):
+    if requestedspot_json in os.listdir("trips"):
         write_log("[" + requestedspot + "]" +" called")
     else:
         ui.label("spot not found.")
