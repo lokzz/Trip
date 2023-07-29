@@ -10,11 +10,11 @@ import re
 print('|----------------|--------------------------------|')
 
 
-if 'trips.json' in os.listdir():
-    with open('trips.json') as json_file:
+if 'spots.json' in os.listdir():
+    with open('spots.json') as json_file:
         knowndict = json.load(json_file)
 else:
-    open('trips.json', 'w').close()
+    open('spots.json', 'w').close()
     knowndict = ["None"]
 print("| {} | data load               [done] |".format(time.strftime("%d/%m %H:%M:%S")))
 
@@ -47,40 +47,40 @@ def write_console(text, format=True):
     else:
         print(text)
 
-def reload_trips():
-    with open('trips.json') as json_file:
+def reload_spots():
+    with open('spots.json') as json_file:
         knowndict = json.load(json_file)
 
-def make_trip(name):
+def make_spot(name):
     if name == "":
         ui.notify("what are you trying to do")
     elif name in knowndict:
-        ui.notify("trip exists")
+        ui.notify("spot exists")
     else:
-        with open('trips.json', 'w') as json_file:
+        with open('spots.json', 'w') as json_file:
             if knowndict == ["None"]:
                 json.dump(name, json_file)
             else:
                 knowndict.append(name)
                 json.dump(knowndict, json_file)
-            open("trips/"+name+".json", "w+")
-        write_log('trip [{}] created'.format(name))
+            open("spots/"+name+".json", "w+")
+        write_log('spot [{}] created'.format(name))
         ui.notify('added {}'.format(name))
-        tabs.set_value('Trips')
+        tabs.set_value('spots')
 
-def open_trip(trip):
-    trip = str(trip)
-    trip = trip.replace("'", "")
-    if not trip == "Choose":
-        if trip == "None":
+def open_spot(spot):
+    spot = str(spot)
+    spot = spot.replace("'", "")
+    if not spot == "Choose":
+        if spot == "None":
             ui.notify("what are you trying to do")
         else:
-            if trip in knowndict:
-                ui.open("trips?name=_"+str(select1.value))
+            if spot in knowndict:
+                ui.open("spots?name=_"+str(select1.value))
             else:
-                ui.notify("trip nonexist")
+                ui.notify("spot nonexist")
     else:
-        ui.notify("select a trip")
+        ui.notify("select a spot")
 
 
 print("| {} | function load           [done] |".format(time.strftime("%d/%m %H:%M:%S")))
@@ -89,63 +89,63 @@ print('|----------------|--------------------------------|')
 #MainPage
 def update():
     timelabel1.set_text("It's currently " + time.strftime("%H:%M:%S") + " In HKT.")
-    reload_trips()
+    reload_spots()
     select1.update()
 
 with ui.header().style('background-color: #3874c8').classes('items-center justify-between'):
-    ui.markdown('## This is **Trip**.')
+    ui.markdown('## This is **spot**.')
 with ui.footer().style('background-color: #3874c8'):
     current_time = time.strftime("%H:%M:%S")
     timelabel1 = ui.label("It's currently " + current_time)
 
 with ui.tabs() as tabs:
-    ui.tab('Trips', icon='flight_takeoff')
+    ui.tab('spots', icon='flight_takeoff')
     ui.tab('Create', icon='add_box')
     ui.tab('About', icon='info')
-with ui.tab_panels(tabs, value='Trips'):
-    with ui.tab_panel('Trips'):
+with ui.tab_panels(tabs, value='spots'):
+    with ui.tab_panel('spots'):
         with ui.row():
-            triplabel1 = ui.label("Select Trip:")
+            spotlabel1 = ui.label("Select spot:")
             select1 = ui.select(knowndict, value="Choose", on_change=lambda selected: write_log("[" + str(selected.value) + "]" + " chosen"))
-            loadbutton1 = ui.button("Go", on_click=lambda: open_trip(select1.value))
+            loadbutton1 = ui.button("Go", on_click=lambda: open_spot(select1.value))
     with ui.tab_panel('Create'):
         with ui.row():
-            Creatlabel1 = ui.label("Create Trip:")
-            newtripbox = ui.input(value="", label="name:").on('keydown.enter', lambda: make_trip(newtripbox.value))
-            loadbutton2 = ui.button("Make", on_click=lambda: make_trip(newtripbox.value))
+            Creatlabel1 = ui.label("Create spot:")
+            newspotbox = ui.input(value="", label="name:").on('keydown.enter', lambda: make_spot(newspotbox.value))
+            loadbutton2 = ui.button("Make", on_click=lambda: make_spot(newspotbox.value))
     with ui.tab_panel('About'):
         ui.label('Made with pain, by Jack.')
         ui.label('Made in Python, with NiceGUI.')
         ui.label('Project started on 4 Jun, 2023.')
-        ui.link('source code here', 'https://github.com/lokzz/Trip')
+        ui.link('source code here', 'https://github.com/lokzz/spot')
 #MainPageEnd
 
-#TripsPage
-@ui.page('/trips')
-def trips(request: Request):
+#spotsPage
+@ui.page('/spots')
+def spots(request: Request):
     def update():
         timelabel1.set_text("It's currently " + time.strftime("%H:%M:%S") + " In HKT.")
     
     with ui.header().style('background-color: #3874c8'):
         with ui.column():
-            ui.markdown('## This is **Trip**.')
-            tripheader = ui.markdown()
+            ui.markdown('## This is **spot**.')
+            spotheader = ui.markdown()
     with ui.footer().style('background-color: #3874c8'):
         current_time = time.strftime("%H:%M:%S")
         timelabel1 = ui.label("It's currently " + current_time)
     
-    requestedtrip = str(request._query_params)
-    requestedtrip = requestedtrip.replace("name=_", "")
-    tripheader.set_content("Chosen trip: **{}**".format(requestedtrip))
-    requestedtrip_json = requestedtrip+".json"
-    if requestedtrip_json in os.listdir("trips"):
-        write_log("[" + requestedtrip + "]" +" called")
+    requestedspot = str(request._query_params)
+    requestedspot = requestedspot.replace("name=_", "")
+    spotheader.set_content("Chosen spot: **{}**".format(requestedspot))
+    requestedspot_json = requestedspot+".json"
+    if requestedspot_json in os.listdir("spots"):
+        write_log("[" + requestedspot + "]" +" called")
     else:
-        ui.label("Trip not found.")
+        ui.label("spot not found.")
         ui.button("GO BACK", on_click=lambda: ui.open("/"))
     
     ui.timer(interval=1, callback=lambda: update())
-#TripsPageEnd
+#spotsPageEnd
 
 def on_connect(ip):
     theip = str(ip.ip)
